@@ -1,17 +1,27 @@
 namespace PowerPlanSwitcher.RuleControl;
 
+using GameManagement;
 using RuleManagement.Dto;
 
 public class GameRuleControl : UserControl
 {
-    private readonly List<string> games = [];
+    private readonly IGameMonitor? gameMonitor;
+    private readonly List<string> detectedGames = [];
+
     private readonly TableLayoutPanel layout;
+    private readonly TableLayoutPanel filterLayout;
+    private readonly TableLayoutPanel detectedLayout;
     private readonly CheckBox ChbAnyGame;
-    private readonly Label LblGame;
-    private readonly ComboBox CmbGame;
-    private readonly Button BtnToggle;
+    private readonly GameFilterEditor WhitelistEditor;
+    private readonly GameFilterEditor BlacklistEditor;
+    private readonly Label LblDetectedGames;
+    private readonly ListBox LstDetectedGames;
     private readonly PictureBox PibGameInfo;
+    private readonly ContextMenuStrip DetectedGamesMenu;
+    private readonly ToolStripMenuItem MiAddToWhitelist;
+    private readonly ToolStripMenuItem MiAddToBlacklist;
     private readonly ToolTip TipHints;
+    private readonly System.Windows.Forms.Timer DetectedGamesTimer;
 
     private GameRuleDto dto = new();
 
@@ -19,7 +29,10 @@ public class GameRuleControl : UserControl
     {
         get
         {
-            dto.Games = ChbAnyGame.Checked ? [] : [.. games];
+            dto.Games = ChbAnyGame.Checked
+                ? []
+                : [.. WhitelistEditor.Games];
+            dto.Blacklist = [.. BlacklistEditor.Games];
             return dto;
         }
 
@@ -27,63 +40,58 @@ public class GameRuleControl : UserControl
         {
             dto = value;
 
-            games.Clear();
-            games.AddRange(dto.GetGameNames());
-
-            RefreshGameItems();
-            ChbAnyGame.Checked = games.Count == 0;
-            CmbGame.Text = games.FirstOrDefault() ?? string.Empty;
+            var whitelist = dto.GetGameNames();
+            WhitelistEditor.SetGames(whitelist);
+            BlacklistEditor.SetGames(dto.GetBlacklistNames());
+            ChbAnyGame.Checked = whitelist.Count == 0;
             UpdateInputState();
         }
     }
 
-    public GameRuleControl()
+    public GameRuleControl(IGameMonitor? gameMonitor = null)
     {
+        this.gameMonitor = gameMonitor;
+
         AutoSize = false;
         Margin = Padding.Empty;
-        MinimumSize = new Size(0, 64);
-        Size = new Size(645, 64);
+        MinimumSize = new Size(0, 100);
+        Size = new Size(645, 100);
 
         ChbAnyGame = new CheckBox
         {
             AutoSize = true,
-            Margin = new Padding(3, 3, 3, 7),
+            Margin = new Padding(3, 2, 3, 4),
             Text = "Any running game",
         };
-        LblGame = new Label
+        WhitelistEditor = new GameFilterEditor
+        {
+            Dock = DockStyle.Fill,
+        };
+        BlacklistEditor = new GameFilterEditor
+        {
+            Dock = DockStyle.Fill,
+        };
+        LblDetectedGames = new Label
         {
             AutoSize = true,
             Anchor = AnchorStyles.Left,
-            Margin = new Padding(3, 6, 6, 3),
-            Text = "Game:",
+            Margin = new Padding(3, 2, 4, 2),
+            Text = "Detected games:",
         };
-        CmbGame = new ComboBox
+        LstDetectedGames = new ListBox
         {
-            Anchor = AnchorStyles.Left | AnchorStyles.Right,
-            AutoCompleteMode = AutoCompleteMode.SuggestAppend,
-            AutoCompleteSource = AutoCompleteSource.ListItems,
-            DrawMode = DrawMode.OwnerDrawFixed,
-            DropDownHeight = 180,
-            DropDownStyle = ComboBoxStyle.DropDown,
-            FormattingEnabled = true,
-            ItemHeight = 24,
-            Margin = new Padding(0, 3, 6, 3),
-            MaxDropDownItems = 8,
-        };
-        BtnToggle = new Button
-        {
-            Anchor = AnchorStyles.Left,
-            Margin = new Padding(0, 3, 6, 3),
-            Size = new Size(30, 25),
-            Text = "+",
-            UseVisualStyleBackColor = true,
+            Anchor = AnchorStyles.Top | AnchorStyles.Bottom
+                | AnchorStyles.Left | AnchorStyles.Right,
+            BorderStyle = BorderStyle.FixedSingle,
+            IntegralHeight = false,
+            Margin = new Padding(3, 0, 3, 2),
         };
         PibGameInfo = new PictureBox
         {
-            Anchor = AnchorStyles.Left,
+            Anchor = AnchorStyles.Right,
             Image = Properties.Resources.info_rhombus,
-            Margin = new Padding(0, 3, 3, 3),
-            Size = new Size(24, 24),
+            Margin = new Padding(0, 0, 2, 0),
+            Size = new Size(20, 20),
             SizeMode = PictureBoxSizeMode.Zoom,
         };
         TipHints = new ToolTip
@@ -92,38 +100,82 @@ public class GameRuleControl : UserControl
             UseAnimation = false,
             UseFading = false,
         };
+        MiAddToWhitelist = new ToolStripMenuItem("Add to whitelist");
+        MiAddToBlacklist = new ToolStripMenuItem("Add to blacklist");
+        DetectedGamesMenu = new ContextMenuStrip();
+        DetectedGamesMenu.Items.AddRange(
+            [MiAddToWhitelist, MiAddToBlacklist]);
 
-        layout = new TableLayoutPanel
+        filterLayout = new TableLayoutPanel
         {
-            ColumnCount = 4,
+            ColumnCount = 1,
+            Dock = DockStyle.Fill,
+            Margin = new Padding(0, 0, 8, 0),
+            Padding = Padding.Empty,
+            RowCount = 3,
+        };
+        filterLayout.ColumnStyles.Add(
+            new ColumnStyle(SizeType.Percent, 100F));
+        filterLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        filterLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        filterLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        filterLayout.Controls.Add(ChbAnyGame, 0, 0);
+        filterLayout.Controls.Add(WhitelistEditor, 0, 1);
+        filterLayout.Controls.Add(BlacklistEditor, 0, 2);
+
+        detectedLayout = new TableLayoutPanel
+        {
+            ColumnCount = 2,
             Dock = DockStyle.Fill,
             Margin = Padding.Empty,
             Padding = Padding.Empty,
             RowCount = 2,
         };
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        layout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        detectedLayout.ColumnStyles.Add(
+            new ColumnStyle(SizeType.Percent, 100F));
+        detectedLayout.ColumnStyles.Add(
+            new ColumnStyle(SizeType.AutoSize));
+        detectedLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        detectedLayout.RowStyles.Add(
+            new RowStyle(SizeType.Percent, 100F));
+        detectedLayout.Controls.Add(LblDetectedGames, 0, 0);
+        detectedLayout.Controls.Add(PibGameInfo, 1, 0);
+        detectedLayout.Controls.Add(LstDetectedGames, 0, 1);
+        detectedLayout.SetColumnSpan(LstDetectedGames, 2);
 
-        layout.Controls.Add(ChbAnyGame, 0, 0);
-        layout.SetColumnSpan(ChbAnyGame, 4);
-        layout.Controls.Add(LblGame, 0, 1);
-        layout.Controls.Add(CmbGame, 1, 1);
-        layout.Controls.Add(BtnToggle, 2, 1);
-        layout.Controls.Add(PibGameInfo, 3, 1);
+        layout = new TableLayoutPanel
+        {
+            ColumnCount = 2,
+            Dock = DockStyle.Fill,
+            Margin = Padding.Empty,
+            Padding = Padding.Empty,
+            RowCount = 1,
+        };
+        layout.ColumnStyles.Add(
+            new ColumnStyle(SizeType.Percent, 58F));
+        layout.ColumnStyles.Add(
+            new ColumnStyle(SizeType.Percent, 42F));
+        layout.RowStyles.Add(
+            new RowStyle(SizeType.Percent, 100F));
+        layout.Controls.Add(filterLayout, 0, 0);
+        layout.Controls.Add(detectedLayout, 1, 0);
 
         Controls.Add(layout);
 
         ChbAnyGame.CheckedChanged += ChbAnyGame_CheckedChanged;
-        CmbGame.TextChanged += CmbGame_TextChanged;
-        CmbGame.SelectedIndexChanged += CmbGame_SelectedIndexChanged;
-        CmbGame.KeyDown += CmbGame_KeyDown;
-        CmbGame.DrawItem += CmbGame_DrawItem;
-        BtnToggle.Click += BtnToggle_Click;
         PibGameInfo.Click += PibGameInfo_Click;
+        LstDetectedGames.ContextMenuStrip = DetectedGamesMenu;
+        LstDetectedGames.DoubleClick += LstDetectedGames_DoubleClick;
+        DetectedGamesMenu.Opening += DetectedGamesMenu_Opening;
+        MiAddToWhitelist.Click += MiAddToWhitelist_Click;
+        MiAddToBlacklist.Click += MiAddToBlacklist_Click;
+        VisibleChanged += GameRuleControl_VisibleChanged;
+
+        DetectedGamesTimer = new System.Windows.Forms.Timer
+        {
+            Interval = 1000,
+        };
+        DetectedGamesTimer.Tick += DetectedGamesTimer_Tick;
 
         ApplyLocalization();
         ChbAnyGame.Checked = true;
@@ -133,141 +185,177 @@ public class GameRuleControl : UserControl
     private void ApplyLocalization()
     {
         ChbAnyGame.Text = Strings.GameRuleControl_ChbAnyGame;
-        LblGame.Text = Strings.GameRuleControl_LblGame;
+        WhitelistEditor.Title = Strings.GameRuleControl_LblWhitelist;
+        BlacklistEditor.Title = Strings.GameRuleControl_LblBlacklist;
+        LblDetectedGames.Text =
+            Strings.GameRuleControl_LblDetectedGames;
+        MiAddToWhitelist.Text =
+            Strings.GameRuleControl_AddToWhitelist;
+        MiAddToBlacklist.Text =
+            Strings.GameRuleControl_AddToBlacklist;
 
         TipHints.SetToolTip(
             ChbAnyGame,
             Strings.GameRuleControl_TipAny);
         TipHints.SetToolTip(
-            CmbGame,
-            Strings.GameRuleControl_TipGame);
+            LblDetectedGames,
+            Strings.GameRuleControl_TipDetected);
+        TipHints.SetToolTip(
+            LstDetectedGames,
+            Strings.GameRuleControl_TipDetected);
         TipHints.SetToolTip(
             PibGameInfo,
-            Strings.GameRuleControl_TipGame);
+            Strings.GameRuleControl_TipDetected);
+
+        WhitelistEditor.SetHint(
+            Strings.GameRuleControl_TipWhitelist);
+        BlacklistEditor.SetHint(
+            Strings.GameRuleControl_TipBlacklist);
     }
 
-    private void ChbAnyGame_CheckedChanged(object? sender, EventArgs e) =>
+    private void ChbAnyGame_CheckedChanged(
+        object? sender,
+        EventArgs e) =>
         UpdateInputState();
 
-    private void CmbGame_TextChanged(object? sender, EventArgs e) =>
-        UpdateInputState();
+    private void UpdateInputState() =>
+        WhitelistEditor.SetInputEnabled(!ChbAnyGame.Checked);
 
-    private void CmbGame_SelectedIndexChanged(object? sender, EventArgs e)
+    private void GameRuleControl_VisibleChanged(
+        object? sender,
+        EventArgs e) =>
+        UpdateDetectedGamesTimer();
+
+    private void UpdateDetectedGamesTimer()
     {
-        if (CmbGame.SelectedItem is string game)
+        if (Visible && gameMonitor is not null)
         {
-            CmbGame.Text = game;
+            RefreshDetectedGames();
+
+            if (!DetectedGamesTimer.Enabled)
+            {
+                DetectedGamesTimer.Start();
+            }
+
+            return;
         }
 
-        UpdateInputState();
+        DetectedGamesTimer.Stop();
     }
 
-    private void CmbGame_KeyDown(object? sender, KeyEventArgs e)
+    private void DetectedGamesTimer_Tick(
+        object? sender,
+        EventArgs e) =>
+        RefreshDetectedGames();
+
+    private void RefreshDetectedGames()
     {
-        if (e.KeyCode != Keys.Enter)
+        if (gameMonitor is null)
         {
             return;
         }
 
-        e.Handled = true;
-        e.SuppressKeyPress = true;
-        ToggleSelectedGame();
-    }
+        List<string> games;
 
-    private void BtnToggle_Click(object? sender, EventArgs e) =>
-        ToggleSelectedGame();
-
-    private void ToggleSelectedGame()
-    {
-        var gameName = CmbGame.Text.Trim();
-        if (gameName.Length == 0)
+        try
+        {
+            games =
+            [
+                .. gameMonitor.GetRunningGames()
+                    .Select(game => GameExecutableName.Normalize(
+                        game.ExecutableName))
+                    .Where(name => name.Length > 0)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(
+                        name => name,
+                        StringComparer.OrdinalIgnoreCase)
+            ];
+        }
+        catch
         {
             return;
         }
 
-        var existingIndex = games.FindIndex(
-            game => string.Equals(
-                game,
-                gameName,
-                StringComparison.OrdinalIgnoreCase));
-
-        if (existingIndex >= 0)
-        {
-            games.RemoveAt(existingIndex);
-        }
-        else
-        {
-            games.Add(gameName);
-        }
-
-        CmbGame.Text = gameName;
-        RefreshGameItems();
-        UpdateInputState();
-    }
-
-    private void RefreshGameItems()
-    {
-        CmbGame.BeginUpdate();
-        CmbGame.Items.Clear();
-        CmbGame.Items.AddRange([.. games.Cast<object>()]);
-        CmbGame.EndUpdate();
-    }
-
-    private void UpdateInputState()
-    {
-        var anyGame = ChbAnyGame.Checked;
-        var gameName = CmbGame.Text.Trim();
-        var isRegistered = games.Any(
-            game => string.Equals(
-                game,
-                gameName,
-                StringComparison.OrdinalIgnoreCase));
-
-        LblGame.Enabled = !anyGame;
-        CmbGame.Enabled = !anyGame;
-        BtnToggle.Enabled = !anyGame && gameName.Length > 0;
-        BtnToggle.Text = isRegistered ? "−" : "+";
-
-        TipHints.SetToolTip(
-            BtnToggle,
-            isRegistered
-                ? Strings.GameRuleControl_RemoveTip
-                : Strings.GameRuleControl_AddTip);
-    }
-
-    private void CmbGame_DrawItem(object? sender, DrawItemEventArgs e)
-    {
-        e.DrawBackground();
-
-        if (e.Index < 0 || e.Index >= CmbGame.Items.Count)
+        if (games.SequenceEqual(
+            detectedGames,
+            StringComparer.OrdinalIgnoreCase))
         {
             return;
         }
 
-        var text = CmbGame.Items[e.Index]?.ToString() ?? string.Empty;
-        var bounds = new Rectangle(
-            e.Bounds.X + 1,
-            e.Bounds.Y + 1,
-            e.Bounds.Width - 2,
-            e.Bounds.Height - 2);
+        var selectedGame = LstDetectedGames.SelectedItem as string;
 
-        using var borderPen = new Pen(SystemColors.ControlDark);
-        e.Graphics.DrawRectangle(borderPen, bounds);
+        detectedGames.Clear();
+        detectedGames.AddRange(games);
 
-        var textBounds = Rectangle.Inflate(bounds, -4, 0);
-        var textColor = (e.State & DrawItemState.Selected) != 0
-            ? SystemColors.HighlightText
-            : SystemColors.ControlText;
+        LstDetectedGames.BeginUpdate();
+        LstDetectedGames.Items.Clear();
+        LstDetectedGames.Items.AddRange(
+            [.. detectedGames.Cast<object>()]);
+        LstDetectedGames.EndUpdate();
 
-        TextRenderer.DrawText(
-            e.Graphics,
-            text,
-            e.Font ?? CmbGame.Font,
-            textBounds,
-            textColor,
-            TextFormatFlags.Left
-                | TextFormatFlags.VerticalCenter
-                | TextFormatFlags.EndEllipsis);
+        if (selectedGame is not null)
+        {
+            var selectedIndex = detectedGames.FindIndex(
+                game => string.Equals(
+                    game,
+                    selectedGame,
+                    StringComparison.OrdinalIgnoreCase));
+
+            if (selectedIndex >= 0)
+            {
+                LstDetectedGames.SelectedIndex = selectedIndex;
+            }
+        }
+    }
+
+    private void DetectedGamesMenu_Opening(
+        object? sender,
+        System.ComponentModel.CancelEventArgs e)
+    {
+        var hasSelection = LstDetectedGames.SelectedItem is string;
+        MiAddToWhitelist.Enabled = hasSelection;
+        MiAddToBlacklist.Enabled = hasSelection;
+    }
+
+    private void LstDetectedGames_DoubleClick(
+        object? sender,
+        EventArgs e) =>
+        AddSelectedGameToWhitelist();
+
+    private void MiAddToWhitelist_Click(
+        object? sender,
+        EventArgs e) =>
+        AddSelectedGameToWhitelist();
+
+    private void MiAddToBlacklist_Click(
+        object? sender,
+        EventArgs e) =>
+        AddSelectedGameToBlacklist();
+
+    private void AddSelectedGameToWhitelist()
+    {
+        if (LstDetectedGames.SelectedItem is not string game)
+        {
+            return;
+        }
+
+        if (ChbAnyGame.Checked)
+        {
+            ChbAnyGame.Checked = false;
+        }
+
+        WhitelistEditor.AddGame(game);
+    }
+
+    private void AddSelectedGameToBlacklist()
+    {
+        if (LstDetectedGames.SelectedItem is not string game)
+        {
+            return;
+        }
+
+        BlacklistEditor.AddGame(game);
     }
 
     private void PibGameInfo_Click(object? sender, EventArgs e) =>
@@ -282,6 +370,8 @@ public class GameRuleControl : UserControl
     {
         if (disposing)
         {
+            DetectedGamesTimer.Dispose();
+            DetectedGamesMenu.Dispose();
             TipHints.Dispose();
         }
 

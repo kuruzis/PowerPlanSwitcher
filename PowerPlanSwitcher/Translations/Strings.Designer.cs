@@ -224,6 +224,24 @@ namespace PowerPlanSwitcher.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add to blacklist.
+        /// </summary>
+        internal static string GameRuleControl_AddToBlacklist {
+            get {
+                return ResourceManager.GetString("GameRuleControl_AddToBlacklist", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add to whitelist.
+        /// </summary>
+        internal static string GameRuleControl_AddToWhitelist {
+            get {
+                return ResourceManager.GetString("GameRuleControl_AddToWhitelist", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Add this executable name to the filter.
         /// </summary>
         internal static string GameRuleControl_AddTip {
@@ -242,11 +260,38 @@ namespace PowerPlanSwitcher.Translations {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Blacklist:.
+        /// </summary>
+        internal static string GameRuleControl_LblBlacklist {
+            get {
+                return ResourceManager.GetString("GameRuleControl_LblBlacklist", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Detected games:.
+        /// </summary>
+        internal static string GameRuleControl_LblDetectedGames {
+            get {
+                return ResourceManager.GetString("GameRuleControl_LblDetectedGames", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Game:.
         /// </summary>
         internal static string GameRuleControl_LblGame {
             get {
                 return ResourceManager.GetString("GameRuleControl_LblGame", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Whitelist:.
+        /// </summary>
+        internal static string GameRuleControl_LblWhitelist {
+            get {
+                return ResourceManager.GetString("GameRuleControl_LblWhitelist", resourceCulture);
             }
         }
 
@@ -260,11 +305,29 @@ namespace PowerPlanSwitcher.Translations {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to When checked, this rule triggers for any game detected by RTSS..
+        ///   Looks up a localized string similar to When checked, this rule triggers for any game detected by RTSS, except games matching the blacklist..
         /// </summary>
         internal static string GameRuleControl_TipAny {
             get {
                 return ResourceManager.GetString("GameRuleControl_TipAny", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Games matching the blacklist are ignored even when they match the whitelist. Wildcards are supported, for example Program.*.exe..
+        /// </summary>
+        internal static string GameRuleControl_TipBlacklist {
+            get {
+                return ResourceManager.GetString("GameRuleControl_TipBlacklist", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Currently detected games. Right-click or double-click an entry to add it to the whitelist or blacklist. MSI Afterburner / RivaTuner Statistics Server must be running for game detection..
+        /// </summary>
+        internal static string GameRuleControl_TipDetected {
+            get {
+                return ResourceManager.GetString("GameRuleControl_TipDetected", resourceCulture);
             }
         }
 
@@ -274,6 +337,15 @@ namespace PowerPlanSwitcher.Translations {
         internal static string GameRuleControl_TipGame {
             get {
                 return ResourceManager.GetString("GameRuleControl_TipGame", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Games matching the whitelist trigger the rule. Wildcards are supported, for example Program.*.exe. Leave the whitelist empty to match any game..
+        /// </summary>
+        internal static string GameRuleControl_TipWhitelist {
+            get {
+                return ResourceManager.GetString("GameRuleControl_TipWhitelist", resourceCulture);
             }
         }
 

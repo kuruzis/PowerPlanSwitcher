@@ -138,20 +138,8 @@ public sealed class RtssSharedMemoryReader
             length = buffer.Length;
         }
 
-        return GetExecutableName(
+        return GameExecutableName.Normalize(
             Encoding.UTF8.GetString(buffer, 0, length));
-    }
-
-    private static string GetExecutableName(string name)
-    {
-        var trimmedName = name.Trim();
-        var separatorIndex = Math.Max(
-            trimmedName.LastIndexOf('\\'),
-            trimmedName.LastIndexOf('/'));
-
-        return separatorIndex >= 0
-            ? trimmedName[(separatorIndex + 1)..].Trim()
-            : trimmedName;
     }
 
     private static long GetViewSize(nint view)

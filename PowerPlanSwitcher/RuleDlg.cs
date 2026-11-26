@@ -1,12 +1,13 @@
 namespace PowerPlanSwitcher;
 
+using GameManagement;
 using PowerManagement;
 using RuleManagement.Dto;
 
 public partial class RuleDlg : Form
 {
     private readonly RuleControl.StartupRuleControl srcStartupRule = new();
-    private readonly RuleControl.GameRuleControl srcGameRule = new();
+    private readonly RuleControl.GameRuleControl srcGameRule;
 
     public IRuleDto? RuleDto { get; set; }
 
@@ -28,8 +29,10 @@ public partial class RuleDlg : Form
     private Guid GetPowerSchemeGuid(string name) =>
             powerSchemes.First(scheme => scheme.name == name).guid;
 
-    public RuleDlg()
+    public RuleDlg(IGameMonitor? gameMonitor = null)
     {
+        srcGameRule = new RuleControl.GameRuleControl(gameMonitor);
+
         InitializeComponent();
         ApplyLocalization();
         _ = new DpiImageScaler(this);

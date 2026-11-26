@@ -2,6 +2,7 @@ namespace PowerPlanSwitcher;
 
 using System.Data;
 using Autofac;
+using GameManagement;
 using Newtonsoft.Json;
 using PowerManagement;
 using Properties;
@@ -44,11 +45,16 @@ public partial class SettingsDlg : Form
     private IEnumerable<RuleWrapper> Rules { get; init; }
 
     private RuleManager RuleManager { get; init; }
+    private IGameMonitor GameMonitor { get; init; }
     private Func<HotkeySelectionDlg> HotkeySelectionDlgFactory { get; init; }
 
-    public SettingsDlg(RuleManager ruleManager, Func<HotkeySelectionDlg> hotkeySelectionDlgFactory)
+    public SettingsDlg(
+        RuleManager ruleManager,
+        IGameMonitor gameMonitor,
+        Func<HotkeySelectionDlg> hotkeySelectionDlgFactory)
     {
         RuleManager = ruleManager;
+        GameMonitor = gameMonitor;
         HotkeySelectionDlgFactory = hotkeySelectionDlgFactory;
 
         Rules = ruleManager.GetRules().Select(r => new RuleWrapper(r));
@@ -494,7 +500,7 @@ public partial class SettingsDlg : Form
 
     private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
     {
-        using var dlg = new RuleDlg();
+        using var dlg = new RuleDlg(GameMonitor);
         if (dlg.ShowDialog() != DialogResult.OK || dlg.RuleDto is null)
         {
             return;
@@ -562,7 +568,7 @@ public partial class SettingsDlg : Form
             ?? throw new InvalidOperationException(
                 "Selected row does not have a valid Rule tag.");
 
-        using var dlg = new RuleDlg
+        using var dlg = new RuleDlg(GameMonitor)
         {
             RuleDto = rule.Dto,
         };

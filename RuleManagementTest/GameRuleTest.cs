@@ -134,6 +134,112 @@ public sealed class GameRuleTest
     }
 
     [TestMethod]
+    public void StartRuling_WildcardFilter_MatchesExecutableName()
+    {
+        var game = CreateGame(1, "Program.foo.exe");
+        _ = A.CallTo(() => gameMonitor.GetRunningGames())
+            .Returns([game]);
+
+        var rule = new GameRule(
+            gameMonitor,
+            new GameRuleDto
+            {
+                Games = ["Program.*.exe"],
+                SchemeGuid = Guid.NewGuid(),
+            });
+        rule.StartRuling();
+
+        Assert.AreEqual(1, rule.TriggerCount);
+    }
+
+    [TestMethod]
+    public void StartRuling_Blacklist_ExcludesMatchingGame()
+    {
+        var excludedGame = CreateGame(1, "osu!.exe");
+        var includedGame = CreateGame(2, "Game 2.exe");
+        _ = A.CallTo(() => gameMonitor.GetRunningGames())
+            .Returns([excludedGame, includedGame]);
+
+        var rule = new GameRule(
+            gameMonitor,
+            new GameRuleDto
+            {
+                Blacklist = ["osu!.exe"],
+                SchemeGuid = Guid.NewGuid(),
+            });
+        rule.StartRuling();
+
+        Assert.AreEqual(1, rule.TriggerCount);
+    }
+
+    [TestMethod]
+    public void StartRuling_WildcardBlacklist_ExcludesMatchingGames()
+    {
+        var firstExcludedGame = CreateGame(1, "Program.foo.exe");
+        var secondExcludedGame = CreateGame(2, "Program.bar.exe");
+        var includedGame = CreateGame(3, "Game.exe");
+        _ = A.CallTo(() => gameMonitor.GetRunningGames())
+            .Returns(
+            [
+                firstExcludedGame,
+                secondExcludedGame,
+                includedGame,
+            ]);
+
+        var rule = new GameRule(
+            gameMonitor,
+            new GameRuleDto
+            {
+                Blacklist = ["Program.*.exe"],
+                SchemeGuid = Guid.NewGuid(),
+            });
+        rule.StartRuling();
+
+        Assert.AreEqual(1, rule.TriggerCount);
+    }
+
+    [TestMethod]
+    public void StartRuling_BlacklistWinsOverWhitelist()
+    {
+        var game = CreateGame(1, "Game 1.exe");
+        _ = A.CallTo(() => gameMonitor.GetRunningGames())
+            .Returns([game]);
+
+        var rule = new GameRule(
+            gameMonitor,
+            new GameRuleDto
+            {
+                Games = ["*.exe"],
+                Blacklist = ["Game 1.exe"],
+                SchemeGuid = Guid.NewGuid(),
+            });
+        rule.StartRuling();
+
+        Assert.AreEqual(0, rule.TriggerCount);
+    }
+
+    [TestMethod]
+    public void GameStarted_Blacklisted_DoesNotIncrementTriggerCount()
+    {
+        _ = A.CallTo(() => gameMonitor.GetRunningGames())
+            .Returns([]);
+
+        var rule = new GameRule(
+            gameMonitor,
+            new GameRuleDto
+            {
+                Blacklist = ["Game 1.exe"],
+                SchemeGuid = Guid.NewGuid(),
+            });
+        rule.StartRuling();
+
+        var game = CreateGame(1, "Game 1.exe");
+        gameMonitor.GameStarted += Raise.With(new GameEventArgs(game));
+
+        Assert.AreEqual(0, rule.TriggerCount);
+    }
+
+    [TestMethod]
     public void GameStarted_Matching_IncrementsTriggerCount()
     {
         var rule = CreateStartedRuleWithFilter("Game 1.exe");
@@ -250,6 +356,33 @@ public sealed class GameRuleTest
 
         Assert.AreEqual(
             "Game -> Game 1.exe, game 2.exe",
+            dto.GetDescription());
+    }
+
+    [TestMethod]
+    public void Description_WithBlacklistOnly_ListsExcludedGames()
+    {
+        var dto = new GameRuleDto
+        {
+            Blacklist = ["Launcher.exe"],
+        };
+
+        Assert.AreEqual(
+            "Game -> Any game except Launcher.exe",
+            dto.GetDescription());
+    }
+
+    [TestMethod]
+    public void Description_WithWhitelistAndBlacklist_ListsBoth()
+    {
+        var dto = new GameRuleDto
+        {
+            Games = ["Program.*.exe"],
+            Blacklist = ["Launcher.exe"],
+        };
+
+        Assert.AreEqual(
+            "Game -> Program.*.exe except Launcher.exe",
             dto.GetDescription());
     }
 

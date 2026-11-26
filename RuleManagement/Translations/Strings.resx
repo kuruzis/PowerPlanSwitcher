@@ -16,6 +16,8 @@
   <!-- Game Rule -->
   <data name="Rule_Game_Desc"><value>Game -&gt; {0}</value></data>
   <data name="Rule_Game_Desc_Any"><value>Game -&gt; Any game</value></data>
+  <data name="Rule_Game_Desc_Blacklist"><value>Game -&gt; Any game except {0}</value></data>
+  <data name="Rule_Game_Desc_WhiteAndBlacklist"><value>Game -&gt; {0} except {1}</value></data>
 
   <!-- Process Rule -->
   <data name="Rule_Process_Desc"><value>Process -&gt; {0} -&gt; {1}</value></data>

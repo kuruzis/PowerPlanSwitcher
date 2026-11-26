@@ -368,9 +368,13 @@ public class RuleManager
     }
 
     private static string BuildGameFilterKey(GameRuleDto gameRuleDto) =>
+        $"{BuildGameNameKey(gameRuleDto.GetGameNames())}|"
+        + $"{BuildGameNameKey(gameRuleDto.GetBlacklistNames())}";
+
+    private static string BuildGameNameKey(IEnumerable<string> names) =>
         string.Join(
             ';',
-            gameRuleDto.GetGameNames()
+            names
                 .Select(name => name.ToLowerInvariant())
                 .OrderBy(name => name, StringComparer.Ordinal));
 

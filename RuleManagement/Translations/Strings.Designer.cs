@@ -79,6 +79,24 @@ namespace RuleManagement.Translations {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Game -&gt; Any game except {0}.
+        /// </summary>
+        internal static string Rule_Game_Desc_Blacklist {
+            get {
+                return ResourceManager.GetString("Rule_Game_Desc_Blacklist", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Game -&gt; {0} except {1}.
+        /// </summary>
+        internal static string Rule_Game_Desc_WhiteAndBlacklist {
+            get {
+                return ResourceManager.GetString("Rule_Game_Desc_WhiteAndBlacklist", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   查找类似 Idle Time -&gt; {0} 的本地化字符串。
         /// </summary>
         internal static string Rule_Idle_Desc {

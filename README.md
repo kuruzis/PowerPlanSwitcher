@@ -30,7 +30,7 @@ Create rules that switch Windows power plans based on:
 
 <img width="671" height="241" alt="image" src="https://github.com/user-attachments/assets/04d67658-fa1d-4d1d-8fd5-f6d180db1308" />
 
-- GameRule: Games being started or stopped, detected through the MSI Afterburner / RivaTuner Statistics Server shared memory interface. Add executable names to limit the rule to specific games, or leave the list empty to switch for any detected game. RivaTuner Statistics Server has to be running for this rule to work.
+- GameRule: Games being started or stopped, detected through the MSI Afterburner / RivaTuner Statistics Server shared memory interface. Use the whitelist and blacklist to limit the rule to specific games; executable names support wildcards such as `Program.*.exe`. Leave the whitelist empty to switch for any detected game except blacklisted ones. The rule dialog shows currently detected games. RivaTuner Statistics Server has to be running for this rule to work.
 
 - PowerLineRule: Plugging or unplugging your laptop from power
 

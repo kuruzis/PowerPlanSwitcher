@@ -54,11 +54,6 @@ public class GameMonitor : IGameMonitor, IDisposable
 
     private void Timer_Tick()
     {
-        if (GameStarted is null && GameTerminated is null)
-        {
-            return;
-        }
-
         List<IGame> startedGames;
         List<IGame> terminatedGames;
 
@@ -78,14 +73,30 @@ public class GameMonitor : IGameMonitor, IDisposable
 
         foreach (var game in terminatedGames)
         {
+            LogGameTerminated(game);
             GameTerminated?.Invoke(this, new GameEventArgs(game));
         }
 
         foreach (var game in startedGames)
         {
+            LogGameDetected(game);
             GameStarted?.Invoke(this, new GameEventArgs(game));
         }
     }
+
+    private static void LogGameDetected(IGame game) =>
+        Log.ForContext("EventType", "Game.Detected")
+            .Information(
+                "Game detected: {ExecutableName} (PID {ProcessId})",
+                game.ExecutableName,
+                game.ProcessId);
+
+    private static void LogGameTerminated(IGame game) =>
+        Log.ForContext("EventType", "Game.Terminated")
+            .Debug(
+                "Game terminated: {ExecutableName} (PID {ProcessId})",
+                game.ExecutableName,
+                game.ProcessId);
 
     private IReadOnlyList<IGame> ReadGames()
     {
@@ -150,10 +161,18 @@ public class GameMonitor : IGameMonitor, IDisposable
 
     public void StartMonitoring()
     {
+        IReadOnlyList<IGame> runningGames;
+
         lock (syncRoot)
         {
-            previousGames = ReadGames()
+            runningGames = ReadGames();
+            previousGames = runningGames
                 .ToDictionary(GetIdentity, IdentityComparer);
+        }
+
+        foreach (var game in runningGames)
+        {
+            LogGameDetected(game);
         }
 
         timer.Start();

@@ -1,5 +1,6 @@
 namespace RuleManagement.Rules;
 
+using DotNet.Globbing;
 using GameManagement;
 using RuleManagement.Dto;
 
@@ -13,7 +14,8 @@ public sealed class GameRule
         string ExecutableName);
 
     private readonly IGameMonitor gameMonitor;
-    private readonly HashSet<string> gameNames;
+    private readonly Glob[] whitelist;
+    private readonly Glob[] blacklist;
     private readonly Dictionary<GameIdentity, IGame> matchedGames = [];
     private readonly object syncRoot = new();
 
@@ -25,9 +27,8 @@ public sealed class GameRule
         : base(gameRuleDto)
     {
         this.gameMonitor = gameMonitor;
-        gameNames = new HashSet<string>(
-            gameRuleDto.GetGameNames().Select(GetExecutableName),
-            StringComparer.OrdinalIgnoreCase);
+        whitelist = [.. gameRuleDto.GetGameNames().Select(ParseGlob)];
+        blacklist = [.. gameRuleDto.GetBlacklistNames().Select(ParseGlob)];
     }
 
     public override void StartRuling()
@@ -105,32 +106,30 @@ public sealed class GameRule
 
     private bool CheckRule(IGame game)
     {
-        var executableName = GetExecutableName(game.ExecutableName);
+        var executableName = GameExecutableName.Normalize(
+            game.ExecutableName);
         if (string.IsNullOrWhiteSpace(executableName))
         {
             return false;
         }
 
-        return gameNames.Count == 0
-            || gameNames.Contains(executableName);
-    }
-
-    private static string GetExecutableName(string? executableName)
-    {
-        if (string.IsNullOrWhiteSpace(executableName))
+        if (blacklist.Length > 0
+            && blacklist.Any(glob => glob.IsMatch(executableName)))
         {
-            return string.Empty;
+            return false;
         }
 
-        var trimmedName = executableName.Trim();
-        var separatorIndex = Math.Max(
-            trimmedName.LastIndexOf('\\'),
-            trimmedName.LastIndexOf('/'));
-
-        return separatorIndex >= 0
-            ? trimmedName[(separatorIndex + 1)..].Trim()
-            : trimmedName;
+        return whitelist.Length == 0
+            || whitelist.Any(glob => glob.IsMatch(executableName));
     }
+
+    private static Glob ParseGlob(string pattern) =>
+        Glob.Parse(
+            pattern,
+            new GlobOptions
+            {
+                Evaluation = { CaseInsensitive = true }
+            });
 
     private static GameIdentity GetIdentity(IGame game) =>
         new(game.ProcessId, game.ExecutableName);

@@ -126,9 +126,17 @@
   <!-- GameRuleControl -->
   <data name="GameRuleControl_ChbAnyGame"><value>Any running game</value></data>
   <data name="GameRuleControl_LblGame"><value>Game:</value></data>
+  <data name="GameRuleControl_LblWhitelist"><value>Whitelist:</value></data>
+  <data name="GameRuleControl_LblBlacklist"><value>Blacklist:</value></data>
+  <data name="GameRuleControl_LblDetectedGames"><value>Detected games:</value></data>
   <data name="GameRuleControl_AddTip"><value>Add this executable name to the filter.</value></data>
   <data name="GameRuleControl_RemoveTip"><value>Remove this executable name from the filter.</value></data>
-  <data name="GameRuleControl_TipAny"><value>When checked, this rule triggers for any game detected by RTSS.</value></data>
+  <data name="GameRuleControl_AddToWhitelist"><value>Add to whitelist</value></data>
+  <data name="GameRuleControl_AddToBlacklist"><value>Add to blacklist</value></data>
+  <data name="GameRuleControl_TipAny"><value>When checked, this rule triggers for any game detected by RTSS, except games matching the blacklist.</value></data>
+  <data name="GameRuleControl_TipWhitelist"><value>Games matching the whitelist trigger the rule. Wildcards are supported, for example Program.*.exe. Leave the whitelist empty to match any game.</value></data>
+  <data name="GameRuleControl_TipBlacklist"><value>Games matching the blacklist are ignored even when they match the whitelist. Wildcards are supported, for example Program.*.exe.</value></data>
+  <data name="GameRuleControl_TipDetected"><value>Currently detected games. Right-click or double-click an entry to add it to the whitelist or blacklist. MSI Afterburner / RivaTuner Statistics Server must be running for game detection.</value></data>
   <data name="GameRuleControl_TipGame"><value>Type an executable name (for example, game.exe) or pick a registered entry from the list. Use + to add it to the filter and - to remove it. RTSS reports executable names only, not full paths. MSI Afterburner / RivaTuner Statistics Server must be running for game detection.</value></data>
 
   <!-- HotkeySelectionDlg -->
@@ -180,7 +188,7 @@
   <data name="RuleDlg_TypeStartup"><value>Startup Rule</value></data>
   <data name="RuleDlg_TypeShutdown"><value>Shutdown Rule</value></data>
   <data name="RuleDlg_TipProcess"><value>A process rule switches power plans based on the presence of a specified process running on the system.</value></data>
-  <data name="RuleDlg_TipGame"><value>A game rule switches power plans while a game is running. Games are detected through MSI Afterburner / RivaTuner Statistics Server. Leave the list empty to trigger for any game, or add executable names to limit the rule.</value></data>
+  <data name="RuleDlg_TipGame"><value>A game rule switches power plans while a game is running. Games are detected through MSI Afterburner / RivaTuner Statistics Server. Use the whitelist and blacklist to limit the rule; wildcards such as Program.*.exe are supported. Leave the whitelist empty to trigger for any game except blacklisted ones.</value></data>
   <data name="RuleDlg_TipPowerLine"><value>A power line rule switches power plans based on the current power line status (plugged in or on battery).</value></data>
   <data name="RuleDlg_TipIdle"><value>An idle rule switches power plans based on the duration without user input.</value></data>
   <data name="RuleDlg_TipStartup"><value>A startup rule switches power plans when the system starts up.&#xD;&#xA;Optionally, you can set a duration after which the power scheme will be deactivated.&#xD;&#xA;This rule is always triggered and should be the last rule in the list.</value></data>
