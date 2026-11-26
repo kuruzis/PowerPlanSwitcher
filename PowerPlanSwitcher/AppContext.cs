@@ -2,6 +2,7 @@ namespace PowerPlanSwitcher;
 
 using System.Configuration;
 using System.Threading;
+using GameManagement;
 using PowerManagement;
 using PowerPlanSwitcher.Properties;
 using ProcessManagement;
@@ -23,6 +24,7 @@ internal class AppContext : ApplicationContext
         IPowerManager powerManager,
         RuleManager ruleManager,
         IProcessMonitor processMonitor,
+        IGameMonitor gameMonitor,
         IIdleMonitor idleMonitor,
         IWindowMessageMonitor windowMessageMonitor)
     {
@@ -52,6 +54,7 @@ internal class AppContext : ApplicationContext
             Default_SettingChanging;
 
         processMonitor.StartMonitoring();
+        gameMonitor.StartMonitoring();
         idleMonitor.StartMonitoring();
         windowMessageMonitor.StartMonitoring();
         ruleManager.StartMonitoring();

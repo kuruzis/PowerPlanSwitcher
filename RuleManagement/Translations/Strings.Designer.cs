@@ -61,6 +61,24 @@ namespace RuleManagement.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Game -&gt; {0}.
+        /// </summary>
+        internal static string Rule_Game_Desc {
+            get {
+                return ResourceManager.GetString("Rule_Game_Desc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Game -&gt; Any game.
+        /// </summary>
+        internal static string Rule_Game_Desc_Any {
+            get {
+                return ResourceManager.GetString("Rule_Game_Desc_Any", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   查找类似 Idle Time -&gt; {0} 的本地化字符串。
         /// </summary>
         internal static string Rule_Idle_Desc {

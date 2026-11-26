@@ -13,6 +13,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 
+  <!-- Game Rule -->
+  <data name="Rule_Game_Desc"><value>Game -&gt; {0}</value></data>
+  <data name="Rule_Game_Desc_Any"><value>Game -&gt; Any game</value></data>
+
   <!-- Process Rule -->
   <data name="Rule_Process_Desc"><value>Process -&gt; {0} -&gt; {1}</value></data>
   <data name="Rule_Process_CmpExact"><value>Match exact Path</value></data>

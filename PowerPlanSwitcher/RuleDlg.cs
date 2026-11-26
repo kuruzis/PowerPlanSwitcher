@@ -6,6 +6,7 @@ using RuleManagement.Dto;
 public partial class RuleDlg : Form
 {
     private readonly RuleControl.StartupRuleControl srcStartupRule = new();
+    private readonly RuleControl.GameRuleControl srcGameRule = new();
 
     public IRuleDto? RuleDto { get; set; }
 
@@ -14,6 +15,7 @@ public partial class RuleDlg : Form
     private static readonly List<(string nameKey, Type type)> RuleTypes =
         [
             ("RuleDlg_TypeProcess", typeof(ProcessRuleDto)),
+            ("RuleDlg_TypeGame", typeof(GameRuleDto)),
             ("RuleDlg_TypePowerLine", typeof(PowerLineRuleDto)),
             ("RuleDlg_TypeIdle", typeof(IdleRuleDto)),
             ("RuleDlg_TypeStartup", typeof(StartupRuleDto)),
@@ -34,6 +36,11 @@ public partial class RuleDlg : Form
         srcStartupRule.Dock = DockStyle.Fill;
         tableLayoutPanel1.Controls.Add(srcStartupRule, 0, 3);
         tableLayoutPanel1.SetColumnSpan(srcStartupRule, 3);
+
+        srcGameRule.Dock = DockStyle.Fill;
+        srcGameRule.Visible = false;
+        tableLayoutPanel1.Controls.Add(srcGameRule, 0, 3);
+        tableLayoutPanel1.SetColumnSpan(srcGameRule, 3);
     }
 
     private void ApplyLocalization()
@@ -71,24 +78,29 @@ public partial class RuleDlg : Form
             CmbRuleType.SelectedIndex = 0;
             PrcProcessRule.Dto = processRuleDto;
         }
-        else if (RuleDto is PowerLineRuleDto powerLineRuleDto)
+        else if (RuleDto is GameRuleDto gameRuleDto)
         {
             CmbRuleType.SelectedIndex = 1;
+            srcGameRule.Dto = gameRuleDto;
+        }
+        else if (RuleDto is PowerLineRuleDto powerLineRuleDto)
+        {
+            CmbRuleType.SelectedIndex = 2;
             PlcPowerLineRule.Dto = powerLineRuleDto;
         }
         else if (RuleDto is IdleRuleDto idleRuleDto)
         {
-            CmbRuleType.SelectedIndex = 2;
+            CmbRuleType.SelectedIndex = 3;
             IrcIdleRule.Dto = idleRuleDto;
         }
         else if (RuleDto is StartupRuleDto startupRuleDto)
         {
-            CmbRuleType.SelectedIndex = 3;
+            CmbRuleType.SelectedIndex = 4;
             srcStartupRule.Dto = startupRuleDto;
         }
         else if (RuleDto is ShutdownRuleDto)
         {
-            CmbRuleType.SelectedIndex = 4;
+            CmbRuleType.SelectedIndex = 5;
         }
         else
         {
@@ -114,6 +126,14 @@ public partial class RuleDlg : Form
         if (ruleType == typeof(ProcessRuleDto))
         {
             RuleDto = PrcProcessRule.Dto;
+            RuleDto.SchemeGuid =
+                GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
+            DialogResult = DialogResult.OK;
+            return;
+        }
+        else if (ruleType == typeof(GameRuleDto))
+        {
+            RuleDto = srcGameRule.Dto;
             RuleDto.SchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
             DialogResult = DialogResult.OK;
@@ -173,6 +193,18 @@ public partial class RuleDlg : Form
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
             srcStartupRule.Visible = false;
+            srcGameRule.Visible = false;
+        }
+        else if (ruleType == typeof(GameRuleDto))
+        {
+            TipHints.SetToolTip(
+                PibRuleInfo,
+                Strings.RuleDlg_TipGame);
+            PrcProcessRule.Visible = false;
+            PlcPowerLineRule.Visible = false;
+            IrcIdleRule.Visible = false;
+            srcStartupRule.Visible = false;
+            srcGameRule.Visible = true;
         }
         else if (ruleType == typeof(PowerLineRuleDto))
         {
@@ -183,6 +215,7 @@ public partial class RuleDlg : Form
             PlcPowerLineRule.Visible = true;
             IrcIdleRule.Visible = false;
             srcStartupRule.Visible = false;
+            srcGameRule.Visible = false;
         }
         else if (ruleType == typeof(IdleRuleDto))
         {
@@ -193,6 +226,7 @@ public partial class RuleDlg : Form
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = true;
             srcStartupRule.Visible = false;
+            srcGameRule.Visible = false;
         }
         else if (ruleType == typeof(StartupRuleDto))
         {
@@ -203,6 +237,7 @@ public partial class RuleDlg : Form
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
             srcStartupRule.Visible = true;
+            srcGameRule.Visible = false;
         }
         else if (ruleType == typeof(ShutdownRuleDto))
         {
@@ -213,6 +248,7 @@ public partial class RuleDlg : Form
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
             srcStartupRule.Visible = false;
+            srcGameRule.Visible = false;
         }
         else
         {
@@ -223,6 +259,7 @@ public partial class RuleDlg : Form
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
             srcStartupRule.Visible = false;
+            srcGameRule.Visible = false;
         }
     }
 

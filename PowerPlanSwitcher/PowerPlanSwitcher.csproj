@@ -51,6 +51,7 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
     <PackageReference Include="System.Management" Version="10.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GameManagement\GameManagement.csproj" />
     <ProjectReference Include="..\PowerManagement\PowerManagement.csproj" />
     <ProjectReference Include="..\ProcessManagement\ProcessManagement.csproj" />
     <ProjectReference Include="..\RuleManagement\RuleManagement.csproj" />

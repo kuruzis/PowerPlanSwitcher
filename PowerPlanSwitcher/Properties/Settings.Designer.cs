@@ -277,6 +277,18 @@ namespace PowerPlanSwitcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int GameMonitorIntervalInMilliseconds {
+            get {
+                return ((int)(this["GameMonitorIntervalInMilliseconds"]));
+            }
+            set {
+                this["GameMonitorIntervalInMilliseconds"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string SelectorMenuFont {
             get {

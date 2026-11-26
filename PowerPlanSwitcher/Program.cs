@@ -3,6 +3,7 @@ namespace PowerPlanSwitcher;
 using System.Diagnostics;
 using System.Drawing;
 using Autofac;
+using GameManagement;
 using Hotkeys;
 using Newtonsoft.Json;
 using PowerManagement;
@@ -449,6 +450,12 @@ internal static class Program
             .WithParameter(
                 "updateInterval",
                 TimeSpan.FromMilliseconds(Settings.Default.ProcessMonitorIntervalInMilliseconds))
+            .SingleInstance();
+        _ = builder.RegisterType<GameMonitor>()
+            .As<IGameMonitor>()
+            .WithParameter(
+                "pollingInterval",
+                TimeSpan.FromMilliseconds(Settings.Default.GameMonitorIntervalInMilliseconds))
             .SingleInstance();
         _ = builder.RegisterType<IdleMonitor>()
             .As<IIdleMonitor>()

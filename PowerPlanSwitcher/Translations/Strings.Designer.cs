@@ -224,6 +224,60 @@ namespace PowerPlanSwitcher.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add this executable name to the filter.
+        /// </summary>
+        internal static string GameRuleControl_AddTip {
+            get {
+                return ResourceManager.GetString("GameRuleControl_AddTip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Any running game.
+        /// </summary>
+        internal static string GameRuleControl_ChbAnyGame {
+            get {
+                return ResourceManager.GetString("GameRuleControl_ChbAnyGame", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Game:.
+        /// </summary>
+        internal static string GameRuleControl_LblGame {
+            get {
+                return ResourceManager.GetString("GameRuleControl_LblGame", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Remove this executable name from the filter.
+        /// </summary>
+        internal static string GameRuleControl_RemoveTip {
+            get {
+                return ResourceManager.GetString("GameRuleControl_RemoveTip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to When checked, this rule triggers for any game detected by RTSS..
+        /// </summary>
+        internal static string GameRuleControl_TipAny {
+            get {
+                return ResourceManager.GetString("GameRuleControl_TipAny", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Type an executable name (for example, game.exe) or pick a registered entry from the list. Use + to add it to the filter and - to remove it. RTSS reports executable names only, not full paths. MSI Afterburner / RivaTuner Statistics Server must be running for game detection..
+        /// </summary>
+        internal static string GameRuleControl_TipGame {
+            get {
+                return ResourceManager.GetString("GameRuleControl_TipGame", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   查找类似 Cancel 的本地化字符串。
         /// </summary>
         internal static string HotkeySelectionDlg_BtnCancel {
@@ -811,6 +865,15 @@ namespace PowerPlanSwitcher.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A game rule switches power plans while a game is running. Games are detected through MSI Afterburner / RivaTuner Statistics Server. Leave the list empty to trigger for any game, or add executable names to limit the rule..
+        /// </summary>
+        internal static string RuleDlg_TipGame {
+            get {
+                return ResourceManager.GetString("RuleDlg_TipGame", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   查找类似 An idle rule switches power plans based on the duration without user input. 的本地化字符串。
         /// </summary>
         internal static string RuleDlg_TipIdle {
@@ -866,6 +929,15 @@ namespace PowerPlanSwitcher.Translations {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Game Rule.
+        /// </summary>
+        internal static string RuleDlg_TypeGame {
+            get {
+                return ResourceManager.GetString("RuleDlg_TypeGame", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 Idle Rule 的本地化字符串。
         /// </summary>

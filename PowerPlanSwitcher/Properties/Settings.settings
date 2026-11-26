@@ -65,6 +65,9 @@
     <Setting Name="ProcessMonitorIntervalInMilliseconds" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2000</Value>
     </Setting>
+    <Setting Name="GameMonitorIntervalInMilliseconds" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
     <Setting Name="SelectorMenuFont" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

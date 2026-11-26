@@ -328,6 +328,7 @@ public class RuleManager
     private static string BuildRuleIdentityKey(IRuleDto dto) => dto switch
     {
         ProcessRuleDto process => $"ProcessRule:{process.Pattern}:{process.Type}",
+        GameRuleDto game => $"GameRule:{BuildGameFilterKey(game)}",
         PowerLineRuleDto powerLine => $"PowerLineRule:{powerLine.PowerLineStatus}",
         IdleRuleDto idle => $"IdleRule:{idle.IdleTimeThreshold}:{idle.CheckExecutionState}:{idle.CheckFullscreenApps}",
         StartupRuleDto => "StartupRule",
@@ -351,6 +352,8 @@ public class RuleManager
         {
             ProcessRuleDto process =>
                 $"ProcessRule|{schemePart}|{process.Pattern ?? string.Empty}|{process.Type}",
+            GameRuleDto game =>
+                $"GameRule|{schemePart}|{BuildGameFilterKey(game)}",
             PowerLineRuleDto powerLine =>
                 $"PowerLineRule|{schemePart}|{powerLine.PowerLineStatus}",
             IdleRuleDto idle =>
@@ -363,6 +366,13 @@ public class RuleManager
                 $"{dto.GetType().FullName ?? dto.GetType().Name}|{schemePart}",
         };
     }
+
+    private static string BuildGameFilterKey(GameRuleDto gameRuleDto) =>
+        string.Join(
+            ';',
+            gameRuleDto.GetGameNames()
+                .Select(name => name.ToLowerInvariant())
+                .OrderBy(name => name, StringComparer.Ordinal));
 
     private void RefreshAppliedRule()
     {

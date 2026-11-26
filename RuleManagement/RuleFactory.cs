@@ -1,5 +1,6 @@
 namespace RuleManagement;
 
+using GameManagement;
 using PowerManagement;
 using ProcessManagement;
 using RuleManagement.Dto;
@@ -9,6 +10,7 @@ using SystemManagement;
 public class RuleFactory(
     IBatteryMonitor batteryMonitor,
     IProcessMonitor processMonitor,
+    IGameMonitor gameMonitor,
     IIdleMonitor idleMonitor,
     IWindowMessageMonitor windowMessageMonitor,
     IPowerManager powerManager,
@@ -16,6 +18,7 @@ public class RuleFactory(
 {
     private readonly IBatteryMonitor batteryMonitor = batteryMonitor;
     private readonly IProcessMonitor processMonitor = processMonitor;
+    private readonly IGameMonitor gameMonitor = gameMonitor;
     private readonly IIdleMonitor idleMonitor = idleMonitor;
     private readonly IWindowMessageMonitor windowMessageMonitor = windowMessageMonitor;
     private readonly IPowerManager powerManager = powerManager;
@@ -25,6 +28,7 @@ public class RuleFactory(
         dto switch
         {
             ProcessRuleDto processDto => new ProcessRule(processMonitor, processDto),
+            GameRuleDto gameRuleDto => new GameRule(gameMonitor, gameRuleDto),
             PowerLineRuleDto powerLineDto => new PowerLineRule(batteryMonitor, powerLineDto),
             IdleRuleDto idleRuleDto => new IdleRule(idleMonitor, powerManager, systemManager, idleRuleDto),
             StartupRuleDto startupRuleDto => new StartupRule(startupRuleDto),

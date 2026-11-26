@@ -123,6 +123,14 @@
   <data name="CreatePasswordDlg_MsgCopyFailed"><value>Failed to copy to clipboard: {0}</value></data>
   <data name="CreatePasswordDlg_TitleClipboardError"><value>Clipboard Error</value></data>
 
+  <!-- GameRuleControl -->
+  <data name="GameRuleControl_ChbAnyGame"><value>Any running game</value></data>
+  <data name="GameRuleControl_LblGame"><value>Game:</value></data>
+  <data name="GameRuleControl_AddTip"><value>Add this executable name to the filter.</value></data>
+  <data name="GameRuleControl_RemoveTip"><value>Remove this executable name from the filter.</value></data>
+  <data name="GameRuleControl_TipAny"><value>When checked, this rule triggers for any game detected by RTSS.</value></data>
+  <data name="GameRuleControl_TipGame"><value>Type an executable name (for example, game.exe) or pick a registered entry from the list. Use + to add it to the filter and - to remove it. RTSS reports executable names only, not full paths. MSI Afterburner / RivaTuner Statistics Server must be running for game detection.</value></data>
+
   <!-- HotkeySelectionDlg -->
   <data name="HotkeySelectionDlg_Title"><value>PowerPlanSwitcher - Set Hotkey</value></data>
   <data name="HotkeySelectionDlg_LblSelectedHotkey"><value>Selected Hotkey:</value></data>
@@ -166,11 +174,13 @@
   <data name="RuleDlg_MsgSelectRuleType"><value>Select a Rule Type!</value></data>
   <data name="RuleDlg_MsgInvalidInputTitle"><value>Invalid input</value></data>
   <data name="RuleDlg_TypeProcess"><value>Process Rule</value></data>
+  <data name="RuleDlg_TypeGame"><value>Game Rule</value></data>
   <data name="RuleDlg_TypePowerLine"><value>Power Line Rule</value></data>
   <data name="RuleDlg_TypeIdle"><value>Idle Rule</value></data>
   <data name="RuleDlg_TypeStartup"><value>Startup Rule</value></data>
   <data name="RuleDlg_TypeShutdown"><value>Shutdown Rule</value></data>
   <data name="RuleDlg_TipProcess"><value>A process rule switches power plans based on the presence of a specified process running on the system.</value></data>
+  <data name="RuleDlg_TipGame"><value>A game rule switches power plans while a game is running. Games are detected through MSI Afterburner / RivaTuner Statistics Server. Leave the list empty to trigger for any game, or add executable names to limit the rule.</value></data>
   <data name="RuleDlg_TipPowerLine"><value>A power line rule switches power plans based on the current power line status (plugged in or on battery).</value></data>
   <data name="RuleDlg_TipIdle"><value>An idle rule switches power plans based on the duration without user input.</value></data>
   <data name="RuleDlg_TipStartup"><value>A startup rule switches power plans when the system starts up.&#xD;&#xA;Optionally, you can set a duration after which the power scheme will be deactivated.&#xD;&#xA;This rule is always triggered and should be the last rule in the list.</value></data>

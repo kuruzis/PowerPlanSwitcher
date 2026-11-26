@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GameManagement\GameManagement.csproj" />
     <ProjectReference Include="..\PowerPlanSwitcher\PowerPlanSwitcher.csproj" />
     <ProjectReference Include="..\RuleManagement\RuleManagement.csproj" />
   </ItemGroup>

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using FakeItEasy;
+using GameManagement;
 using Newtonsoft.Json;
 using PowerManagement;
 using ProcessManagement;
@@ -18,6 +19,7 @@ public sealed class RuleManagerTest
 {
     private IBatteryMonitor batteryMonitor = null!;
     private IProcessMonitor processMonitor = null!;
+    private IGameMonitor gameMonitor = null!;
     private IWindowMessageMonitor windowMessageMonitor = null!;
     private IIdleMonitor idleMonitor = null!;
     private RuleFactory ruleFactory = null!;
@@ -29,6 +31,7 @@ public sealed class RuleManagerTest
     {
         batteryMonitor = A.Fake<IBatteryMonitor>();
         processMonitor = A.Fake<IProcessMonitor>();
+        gameMonitor = A.Fake<IGameMonitor>();
         windowMessageMonitor = A.Fake<IWindowMessageMonitor>();
         idleMonitor = A.Fake<IIdleMonitor>();
         powerManager = A.Fake<IPowerManager>();
@@ -37,6 +40,7 @@ public sealed class RuleManagerTest
         ruleFactory = new RuleFactory(
             batteryMonitor,
             processMonitor,
+            gameMonitor,
             idleMonitor,
             windowMessageMonitor,
             powerManager,
